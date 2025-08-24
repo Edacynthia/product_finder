@@ -89,10 +89,28 @@
 
             <form method="POST" action="{{ route('register') }}">
                 @csrf
+
+                <!-- Role Selection -->
                 <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-medium mb-2" for="name">
-                        Full Name
-                    </label>
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Register As</label>
+                    <div class="flex space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="role" value="user" class="form-radio text-purple-600" checked @if(old('role') === 'user') checked @endif onchange="toggleMarketerFields()">
+                            <span class="ml-2 text-gray-600">Regular User</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="role" value="marketer" class="form-radio text-purple-600" @if(old('role') === 'marketer') checked @endif onchange="toggleMarketerFields()">
+                            <span class="ml-2 text-gray-600">Marketer</span>
+                        </label>
+                    </div>
+                    @error('role')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @endif
+                </div>
+
+                <!-- Name -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="name">Full Name</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-user text-gray-400"></i>
@@ -107,12 +125,14 @@
                             placeholder="John Doe"
                         >
                     </div>
+                    @error('name')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @endif
                 </div>
 
+                <!-- Email -->
                 <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-medium mb-2" for="email">
-                        Email Address
-                    </label>
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="email">Email Address</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-envelope text-gray-400"></i>
@@ -127,12 +147,14 @@
                             placeholder="you@example.com"
                         >
                     </div>
+                    @error('email')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @endif
                 </div>
 
+                <!-- Password -->
                 <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-medium mb-2" for="password">
-                        Password
-                    </label>
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="password">Password</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-lock text-gray-400"></i>
@@ -149,12 +171,14 @@
                             <i class="password-toggle fas fa-eye-slash text-gray-400" id="togglePassword"></i>
                         </div>
                     </div>
+                    @error('password')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @endif
                 </div>
 
+                <!-- Confirm Password -->
                 <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-medium mb-2" for="password_confirmation">
-                        Confirm Password
-                    </label>
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="password_confirmation">Confirm Password</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-lock text-gray-400"></i>
@@ -173,6 +197,116 @@
                     </div>
                 </div>
 
+                <!-- Marketer Fields -->
+                <div id="marketer-fields" class="hidden">
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="type">Type</label>
+                        <select name="type" id="type" class="form-input w-full py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500">
+                            <option value="" disabled {{ old('type') ? '' : 'selected' }}>Select Type</option>
+                            <option value="individual" {{ old('type') === 'individual' ? 'selected' : '' }}>Individual</option>
+                            <option value="company" {{ old('type') === 'company' ? 'selected' : '' }}>Company</option>
+                        </select>
+                        @error('type')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @endif
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="location">Location</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-map-marker-alt text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                name="location" 
+                                id="location"
+                                value="{{ old('location') }}"
+                                class="form-input w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500"
+                                placeholder="Lagos, Nigeria"
+                            >
+                        </div>
+                        @error('location')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @endif
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="description">Description</label>
+                        <textarea 
+                            name="description" 
+                            id="description" 
+                            rows="4" 
+                            class="form-input w-full py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500"
+                            placeholder="Tell us about yourself or your business"
+                        >{{ old('description') }}</textarea>
+                        @error('description')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @endif
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="contact_phone">Contact Phone</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-phone text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                name="contact_phone" 
+                                id="contact_phone"
+                                value="{{ old('contact_phone') }}"
+                                class="form-input w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500"
+                                placeholder="+234 801 234 5678"
+                            >
+                        </div>
+                        @error('contact_phone')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @endif
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="contact_email">Contact Email</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="email" 
+                                name="contact_email" 
+                                id="contact_email"
+                                value="{{ old('contact_email') }}"
+                                class="form-input w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500"
+                                placeholder="contact@yourbusiness.com"
+                            >
+                        </div>
+                        @error('contact_email')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @endif
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="website">Website</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-globe text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="url" 
+                                name="website" 
+                                id="website"
+                                value="{{ old('website') }}"
+                                class="form-input w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500"
+                                placeholder="https://yourwebsite.com"
+                            >
+                        </div>
+                        @error('website')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
                 <button 
                     type="submit"
                     class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 shadow-md hover:shadow-lg"
@@ -198,7 +332,6 @@
             const passwordInput = document.getElementById('password');
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
-            
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
         });
@@ -208,10 +341,19 @@
             const passwordInput = document.getElementById('password_confirmation');
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
-            
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
         });
+
+        // Toggle marketer fields
+        function toggleMarketerFields() {
+            const marketerFields = document.getElementById('marketer-fields');
+            const role = document.querySelector('input[name="role"]:checked').value;
+            marketerFields.classList.toggle('hidden', role !== 'marketer');
+        }
+
+        // Run on page load to set initial state
+        document.addEventListener('DOMContentLoaded', toggleMarketerFields);
     </script>
 </body>
 </html>

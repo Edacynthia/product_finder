@@ -20,6 +20,10 @@ return new class extends Migration
             $table->string('contact_phone')->nullable();
             $table->string('contact_email')->nullable();
             $table->string('website')->nullable();
+            $table->string('whatsapp_link')->nullable();
+            $table->string('telegram_handle')->nullable();
+            $table->string('instagram_handle')->nullable();
+            $table->string('image_path')->nullable();
             $table->timestamps();
         });
     }

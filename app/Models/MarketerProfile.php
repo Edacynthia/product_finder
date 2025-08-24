@@ -14,18 +14,14 @@ class MarketerProfile extends Model
         'contact_phone',
         'contact_email',
         'website',
+        'image_path', 
+        'telegram_handle',
+        'instagram_handle',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function products()
-    {
-        return $this->belongsToMany(Product::class, 'marketer_products')
-            ->withPivot('price')
-            ->withTimestamps();
     }
 
     public function inquiries()

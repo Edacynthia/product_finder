@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\MarketerController;
 use App\Http\Controllers\SearchController;
@@ -11,10 +12,13 @@ use Illuminate\Support\Facades\Route;
 
 
 
+
 // Home
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // Public search
 Route::get('/search', [SearchController::class, 'index'])->name('search');
@@ -55,15 +59,20 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [RegisterController::class, 'register']);
 
+
+
 Route::middleware(['auth', 'isMarketer'])->group(function () {
     Route::get('/marketer/dashboard', [MarketerController::class, 'dashboard'])->name('marketer.dashboard');
-    Route::post('/marketer/profile', [MarketerController::class, 'updateProfile'])->name('marketer.profile.update');
+    Route::get('/marketer/profile/edit/{profile}', [MarketerController::class, 'editProfile'])->name('marketer.profile.edit');
+    Route::put('/marketer/profile', [MarketerController::class, 'updateProfile'])->name('marketer.profile.update');
     Route::get('/marketer/products/manage', [MarketerController::class, 'manageProducts'])->name('marketer.products.manage');
     Route::post('/marketer/products', [MarketerController::class, 'attachProduct'])->name('marketer.products.attach');
     Route::put('/marketer/products/{product}', [MarketerController::class, 'updateProduct'])->name('marketer.products.update');
     Route::delete('/marketer/products/{product}', [MarketerController::class, 'deleteProduct'])->name('marketer.products.delete');
     Route::get('/marketer/inquiries', [MarketerController::class, 'inquiries'])->name('marketer.inquiries');
+    Route::get('/marketer/products/all', [MarketerController::class, 'allProducts'])->name('marketer.products.all');
+    Route::get('/marketer/products/edit/{product}', [MarketerController::class, 'editProduct'])->name('marketer.products.edit');
+    Route::get('/marketer/products/search', [MarketerController::class, 'search'])->name('marketer.products.search');
 });
 
-Route::get('/products/all', [MarketerController::class, 'allProducts'])->name('marketer.products.all');
-Route::get('/products/search', [MarketerController::class, 'search'])->name('marketer.products.search');
+Route::get('/marketer/profile/{profile}', [MarketerController::class, 'showProfile'])->name('marketer.profile.show');
