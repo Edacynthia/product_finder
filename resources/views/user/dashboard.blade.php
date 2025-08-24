@@ -39,9 +39,9 @@
             @foreach ($products as $product)
                 <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition-all duration-300 hover:shadow-xl">
                     <!-- Product Image -->
-                    <img 
-                        src="{{ $product->image_path ? Storage::url($product->image_path) : asset('images/placeholder.jpg') }}" 
-                        alt="{{ $product->name }}" 
+                    <img
+                        src="{{ $product->image_path ? Storage::url($product->image_path) : asset('images/placeholder.jpg') }}"
+                        alt="{{ $product->name }}"
                         class="w-full h-48 object-cover"
                     >
                     <!-- Product Details -->
@@ -57,8 +57,8 @@
                             <span>{{ $product->category->name }}</span>
                         </div>
                         <div class="mt-4">
-                            <a 
-                                href="{{ route('marketer.profile.show', $product->user->marketerProfile->id) }}" 
+                            <a
+                                href="{{ route('marketer.profile.show', $product->user->id) }}"
                                 class="inline-block bg-gradient-to-r from-purple-600 to-purple-700 text-white py-2 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                             >
                                 Contact Marketer

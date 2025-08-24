@@ -11,8 +11,6 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
-
-
 // Home
 Route::get('/', function () {
     return view('welcome');
@@ -75,4 +73,5 @@ Route::middleware(['auth', 'isMarketer'])->group(function () {
     Route::get('/marketer/products/search', [MarketerController::class, 'search'])->name('marketer.products.search');
 });
 
-Route::get('/marketer/profile/{profile}', [MarketerController::class, 'showProfile'])->name('marketer.profile.show');
+Route::get('/marketer/profile/{userid}', [MarketerController::class, 'showProfile'])->name('marketer.profile.show');
+

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\MarketerProfile;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -25,33 +26,33 @@ class MarketerController extends Controller
         return view('marketer.dashboard', compact('profile', 'products'));
     }
 
-   public function updateProfile(Request $request)
-{
-    $data = $request->validate([
-        'type' => 'required|in:individual,company',
-        'location' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'contact_phone' => 'nullable|string',
-        'contact_email' => 'nullable|email',
-        'website' => 'nullable|url',
-        'whatsapp_link' => 'nullable|string|max:255',
-        'telegram_handle' => 'nullable|string|max:255',
-        'instagram_handle' => 'nullable|string|max:255',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-    ]);
+    public function updateProfile(Request $request)
+    {
+        $data = $request->validate([
+            'type' => 'required|in:individual,company',
+            'location' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'contact_phone' => 'nullable|string',
+            'contact_email' => 'nullable|email',
+            'website' => 'nullable|url',
+            'whatsapp_link' => 'nullable|string|max:255',
+            'telegram_handle' => 'nullable|string|max:255',
+            'instagram_handle' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
 
-    $profile = Auth::user()->marketerProfile;
-    if ($request->hasFile('image')) {
-        if ($profile->image_path) {
-            Storage::disk('public')->delete($profile->image_path);
+        $profile = Auth::user()->marketerProfile;
+        if ($request->hasFile('image')) {
+            if ($profile->image_path) {
+                Storage::disk('public')->delete($profile->image_path);
+            }
+            $data['image_path'] = $request->file('image')->store('profiles', 'public');
         }
-        $data['image_path'] = $request->file('image')->store('profiles', 'public');
+
+        $profile->update($data);
+
+        return redirect()->route('marketer.profile.show', $profile)->with('success', 'Profile updated');
     }
-
-    $profile->update($data);
-
-    return redirect()->route('marketer.profile.show', $profile)->with('success', 'Profile updated');
-}
 
     public function editProfile(MarketerProfile $profile)
     {
@@ -162,37 +163,41 @@ class MarketerController extends Controller
         return view('marketer.inquiries', compact('inquiries'));
     }
 
-    public function showProfile(MarketerProfile $profile)
+    public function showProfile(string $userid)
     {
-        // dd($profile);
-        dd( $marketerProfile = MarketerProfile::where('id', $profile)->get()->count());
-         try {
-            $marketerProfile = MarketerProfile::with(['user', 'products'])->findOrFail($profile);
+//        $relatedUser = User::with(['products', 'marketerProfile'])->find($userid);
+//        dd($relatedUser->hasRole('marketer'), );
 
-            if (!$marketerProfile->user->hasRole('marketer')) {
-                Log::warning('MarketerController@showProfile: Profile does not belong to a marketer', [
-                    'profile_id' => $profile,
-                    'user_id' => $marketerProfile->user_id,
-                ]);
-                return redirect()->route('home')->with('error', 'Invalid marketer profile.');
-            }
+        try {
+            $relatedUser = User::with(['products', 'marketerProfile'])->find($userid);
 
-            Log::info('MarketerController@showProfile: Fetched marketer profile', [
-                'profile_id' => $profile,
-                'user_id' => $marketerProfile->user_id,
-                'auth_user_id' => Auth::id(),
-            ]);
+//            if ($relatedUser->hasRole('marketer') && !auth()->user()->hasRole('marketer')) {
+//                dd('taosdih');
+//                Log::warning('MarketerController@showProfile: Profile does not belong to a marketer', [
+//                    'profile_id' => $relatedUser->marketerProfile->id,
+//                    'user_id' => $relatedUser->id,
+//                ]);
+//                return redirect()->route('home')->with('error', 'Invalid marketer profile.');
+//            }
 
-            return view('marketer.profile.show', compact('marketerProfile'));
+//            Log::info('MarketerController@showProfile: Fetched marketer profile', [
+//                'profile_id' => $relatedUser->marketerProfile->id,
+//                'user_id' => $relatedUser->id,
+//                'auth_user_id' => Auth::id(),
+//            ]);
+
+//            dd('aif');
+
+            return view('marketer.profile.show_marketer', compact('relatedUser'));
         } catch (\Exception $e) {
             Log::error('MarketerController@showProfile: Failed to fetch profile', [
-                'profile_id' => $profile,
+                'profile_id' => $relatedUser->marketerProfile->id,
                 'error' => $e->getMessage(),
             ]);
             return redirect()->route('home')->with('error', 'Failed to load marketer profile.');
         }
     }
-    
+
 
     public function search(Request $request)
     {
